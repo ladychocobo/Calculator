@@ -70,13 +70,30 @@ class ViewController: UIViewController {
         }
         self.outerStackView.addArrangedSubview(outerButtonStackView)
         self.view.addSubview(self.outerStackView)
-        
-        
+    }
+    
+    private func showSizeClasses() {
+        if !isInputNumbers {
+            print("Width: \(traitCollection.horizontalSizeClass.description) \nheight: \(traitCollection.verticalSizeClass.description)\n")
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-20-[outerStackView]-10-|", options: .alignAllLeading, metrics: nil, views: ["outerStackView":self.outerStackView]))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[outerStackView]-10-|", options: .alignAllLeading, metrics: nil, views: ["outerStackView":self.outerStackView]))
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.showSizeClasses()
+    }
+    
+    // 當view的方向(orientation)改變時，會有的動作
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: { (coordinator) in
+            self.showSizeClasses()
+        }, completion: nil)
     }
     
     func onOperatorAction(_ sender: UIButton) {
@@ -157,4 +174,12 @@ class ViewController: UIViewController {
     }
 }
 
-
+extension UIUserInterfaceSizeClass: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .compact: return "Compact"
+        case .regular: return "Regular"
+        case .unspecified: return "??"
+        }
+    }
+}
